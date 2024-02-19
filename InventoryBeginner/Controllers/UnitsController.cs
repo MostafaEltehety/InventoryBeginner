@@ -1,5 +1,6 @@
 ﻿using InventoryBeginner.Interfaces;
 using InventoryBeginner.Models;
+using InventoryBeginner.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryBeginner.Controllers
@@ -19,10 +20,24 @@ namespace InventoryBeginner.Controllers
             _unitRepo = unitRepo;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string sortExpresion = "", string SearchText = "", int pg = 1, int pageSize = 5)
         {
-            var units = _unitRepo.GetUnits();
-            //var units = _context.Units.ToList();
+            ViewBag.SearchText = SearchText;
+            SortModel sortModel = new SortModel();
+            sortModel.AddColumn("id");
+            sortModel.AddColumn("name");
+            sortModel.AddColumn("description");
+            sortModel.ApplySort(sortExpresion);
+            ViewData["sortModel"] = sortModel;
+
+            PaginatedList<Unit> units = _unitRepo.GetItems(sortModel.SortedProperty, sortModel.SortedOrder, SearchText, pg, pageSize);
+
+            //int totRec = ((PaginatedList<Unit>)units).TotalRecords;
+
+            var pager = new PagerModel(units.TotalRecords, pg, pageSize);
+            pager.SortExpresion = sortExpresion;
+            ViewBag.Pager = pager;
+
             return View(units);
         }
         public IActionResult Create()

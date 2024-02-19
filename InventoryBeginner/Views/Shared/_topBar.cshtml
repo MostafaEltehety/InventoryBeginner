@@ -1,0 +1,93 @@
+﻿@model PagerModel
+ 
+
+<nav aria-label="Page navigation example">
+    
+    <ul class="pagination">
+
+        @if (Model.CurrentPage>1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="@Model.Action"
+                   asp-route-pg="1"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-SearchText="@Model.SearchText"
+                   asp-route-sortExpresion="@Model.SortExpresion"
+                >
+                    First
+                </a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" asp-action="@Model.Action"
+                   asp-route-pg="@(Model.CurrentPage-1)"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-SearchText="@Model.SearchText"
+                   asp-route-sortExpresion="@Model.SortExpresion"
+                  >
+                    Previous
+                </a>
+            </li>
+
+        }
+
+
+
+
+    @for (var pge=Model.StartPage;pge<=Model.EndPage;pge++)
+    {
+        <li class="page-item @(pge==Model.CurrentPage?"active":"")">
+            @if (pge!=Model.CurrentPage)
+                { 
+            <a class="page-link" asp-action="@Model.Action"
+                       asp-route-pg="@pge"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-SearchText="@Model.SearchText"
+                       asp-route-sortExpresion="@Model.SortExpresion"
+            aria-label="Previous">
+                    @pge
+                    </a>
+                }
+                else
+                {
+                    <span class="page-link">@pge</span>
+                }
+        </li>
+        
+    }
+
+        @if (Model.CurrentPage <Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="@Model.Action"
+                   asp-route-pg="@(Model.CurrentPage + 1 )"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-SearchText="@Model.SearchText"
+                   asp-route-sortExpresion="@Model.SortExpresion"
+                >
+                    Next
+                </a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" asp-action="@Model.Action"
+                   asp-route-pg="@(Model.TotalPages)"
+                   asp-route-pageSize="@Model.PageSize"
+                   asp-route-SearchText="@Model.SearchText"
+                   asp-route-sortExpresion="@Model.SortExpresion"
+             >
+                    Last
+                </a>
+            </li>
+
+        }
+
+
+
+
+    </ul>
+    
+    
+        
+       
+</nav>

@@ -1,7 +1,6 @@
 ﻿using InventoryBeginner.Data;
 using InventoryBeginner.Interfaces;
 using InventoryBeginner.Models;
-
 namespace InventoryBeginner.Repository
 {
     public class UnitRepository : IUnit
@@ -41,9 +40,36 @@ namespace InventoryBeginner.Repository
             return _context.Units.FirstOrDefault(u => u.Id == id);
         }
 
-        public List<Unit> GetUnits()
+        public PaginatedList<Unit> GetItems(string sortProperty, Tools.SortOrder sortOrder, string SearchText = "", int pageIndex = 1, int pageSize = 5)
         {
-            return _context.Units.ToList();
+            List<Unit> units;
+            if (SearchText != "")
+                units = _context.Units.Where(u => u.Name.ToLower().Contains(SearchText.ToLower()) || u.Description.ToLower().Contains(SearchText.ToLower())).ToList();
+            else
+                units = _context.Units.ToList();
+
+            units = DoSort(units, sortProperty, sortOrder);
+
+            PaginatedList<Unit> resUnit = new PaginatedList<Unit>(units, pageIndex, pageSize);
+            return resUnit;
+        }
+        private List<Unit> DoSort(List<Unit> units, string sortProperty, Tools.SortOrder sortOrder)
+        {
+            if (sortProperty.ToLower() == "name")
+            {
+                if (sortOrder == Tools.SortOrder.Ascending)
+                    units = units.OrderBy(u => u.Name).ToList();
+                else
+                    units = units.OrderByDescending(u => u.Name).ToList();
+            }
+            else
+            {
+                if (sortOrder == Tools.SortOrder.Ascending)
+                    units = units.OrderBy(u => u.Description).ToList();
+                else
+                    units = units.OrderByDescending(u => u.Description).ToList();
+            }
+            return units;
         }
     }
 }
